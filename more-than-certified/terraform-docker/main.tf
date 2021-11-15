@@ -16,17 +16,44 @@ resource "docker_image" "nodered_image" {
   # Name of image itself from DockerHub
   name = "nodered/node-red:latest"
 }
+
+# Define random string resources for names of containers
+resource "random_string" "random" {
+  length = 4
+  special = false
+  upper = false
+}
+
+resource "random_string" "random2" {
+  length = 4
+  special = false
+  upper = false
+}
+
 # Define docker container resource
 resource "docker_container" "nodered_container" {
-  # Give it logical name if we need to reference it later
-  name = "nodered"
+  # Give it logical name if we need to reference it later - Use random string
+  name = join("-", ["nodered", random_string.random.result])
   # Specify docker image and ref image we made above
   # .latest gives us ID of the image
   image = docker_image.nodered_image.latest
   # Ports to expose on container + mapping
   ports {
     internal = 1880
-    external = 1880
+    #external = 1880
+  }
+}
+
+resource "docker_container" "nodered_container2" {
+  # Give it logical name if we need to reference it later
+  name = join("-", ["nodered", random_string.random2.result])
+  # Specify docker image and ref image we made above
+  # .latest gives us ID of the image
+  image = docker_image.nodered_image.latest
+  # Ports to expose on container + mapping
+  ports {
+    internal = 1880
+    #external = 1880
   }
 }
 
@@ -39,5 +66,15 @@ output "Ip_address_port" {
 
 output "container_name" {
   value       = docker_container.nodered_container.name
+  description = "Name of container"
+}
+
+output "Ip_address_port2" {
+  value       = join(":", [docker_container.nodered_container2.ip_address, docker_container.nodered_container2.ports[0].external])
+  description = "IP addr & port of container"
+}
+
+output "container_name2" {
+  value       = docker_container.nodered_container2.name
   description = "Name of container"
 }
