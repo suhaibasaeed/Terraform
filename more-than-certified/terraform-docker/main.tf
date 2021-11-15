@@ -49,7 +49,7 @@ output "Ip_address_port" {
 }
 
 output "container_name" {
-  value       = docker_container.nodered_container[0].name
+  value       = docker_container.nodered_container[*].name
   description = "Name of container"
 }
 
@@ -58,7 +58,3 @@ output "Ip_address_port2" {
   description = "IP addr & port of container"
 }
 
-output "container_name2" {
-  value       = docker_container.nodered_container[1].name
-  description = "Name of container"
-}
