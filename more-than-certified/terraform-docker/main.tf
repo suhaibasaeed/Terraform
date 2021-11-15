@@ -19,7 +19,7 @@ resource "docker_image" "nodered_image" {
 
 # Define random string resources for names of containers
 resource "random_string" "random" {
-  count = 2
+  count = 1
   length = 4
   special = false
   upper = false
@@ -27,7 +27,7 @@ resource "random_string" "random" {
 
 # Define docker container resource
 resource "docker_container" "nodered_container" {
-  count = 2 # 2 containers
+  count = 1 # 1 container now only
   # Give it logical name if we need to reference it later - Use random string
   name = join("-", ["nodered", random_string.random[count.index].result])
   # Specify docker image and ref image we made above
@@ -42,19 +42,14 @@ resource "docker_container" "nodered_container" {
 
 
 # Add output values referencing attribute of above container
-# Use join function to output ipaddr:port
-output "Ip_address_port" {
-  value       = join(":", [docker_container.nodered_container[0].ip_address, docker_container.nodered_container[0].ports[0].external])
-  description = "IP addr & port of container"
-}
 
 output "container_name" {
   value       = docker_container.nodered_container[*].name
   description = "Name of container"
 }
-
-output "Ip_address_port2" {
-  value       = join(":", [docker_container.nodered_container[1].ip_address, docker_container.nodered_container[1].ports[0].external])
+# Use join function to output ipaddr:port with for loop
+output "Ip_address_port" {
+  value       = [for i in docker_container.nodered_container: join(":",[i.ip_address, i.ports[0].external])]
   description = "IP addr & port of container"
 }
 
