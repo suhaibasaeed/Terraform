@@ -31,12 +31,13 @@ resource "docker_container" "nodered_container" {
 }
 
 # Add output values referencing attribute of above container
-output "Ip_address" {
-  value = docker_container.nodered_container.ip_address
-  description = "IP addr of container"
+# Use join function to output ipaddr:port
+output "Ip_address_port" {
+  value       = join(":", [docker_container.nodered_container.ip_address, docker_container.nodered_container.ports[0].external])
+  description = "IP addr & port of container"
 }
 
 output "container_name" {
-  value = docker_container.nodered_container.name
+  value       = docker_container.nodered_container.name
   description = "Name of container"
 }
