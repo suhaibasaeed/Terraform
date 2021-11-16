@@ -40,6 +40,12 @@ resource "docker_container" "nodered_container" {
   }
 }
 
+# Create 2nd docker container for one we are importing
+resource "docker_container" "nodered_container2" {
+  # Specify actual name of container from docker ps command
+  name = "nodered-fdia"
+  image = docker_image.nodered_image.latest
+}
 
 # Add output values referencing attribute of above container
 
