@@ -11,6 +11,22 @@ terraform {
 # Instantiate provider
 provider "docker" {}
 
+# Add variables
+variable "ext_port" {
+  type = number
+  default = 1880
+}
+
+variable "int_port" {
+  type = number
+  default = 1880
+}
+
+variable "container_count" {
+  type = number
+  default = 1
+}
+
 # Define docker image resource called nodered_image
 resource "docker_image" "nodered_image" {
   # Name of image itself from DockerHub
@@ -27,7 +43,7 @@ resource "random_string" "random" {
 
 # Define docker container resource
 resource "docker_container" "nodered_container" {
-  count = 1 # 1 container now only
+  count = var.container_count # 1 container now only
   # Give it logical name if we need to reference it later - Use random string
   name = join("-", ["nodered", random_string.random[count.index].result])
   # Specify docker image and ref image we made above
@@ -35,20 +51,12 @@ resource "docker_container" "nodered_container" {
   image = docker_image.nodered_image.latest
   # Ports to expose on container + mapping
   ports {
-    internal = 1880
-    #external = 1880
+    internal = var.int_port
+    external = var.ext_port
   }
 }
 
-# Create 2nd docker container for one we are importing
-resource "docker_container" "nodered_container2" {
-  # Specify actual name of container from docker ps command
-  name = "nodered-fdia"
-  image = docker_image.nodered_image.latest
-}
-
 # Add output values referencing attribute of above container
-
 output "container_name" {
   value       = docker_container.nodered_container[*].name
   description = "Name of container"

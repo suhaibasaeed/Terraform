@@ -1,27 +1,31 @@
 {
   "version": 4,
   "terraform_version": "1.0.11",
-  "serial": 114,
+  "serial": 112,
   "lineage": "7bc22e99-60a2-c57f-0012-95308fb02781",
   "outputs": {
     "Ip_address_port": {
       "value": [
-        "172.17.0.2:49157"
+        "172.17.0.2:49157",
+        "172.17.0.3:49159"
       ],
       "type": [
         "tuple",
         [
+          "string",
           "string"
         ]
       ]
     },
     "container_name": {
       "value": [
-        "nodered-qpq0"
+        "nodered-qpq0",
+        "nodered-39tc"
       ],
       "type": [
         "tuple",
         [
+          "string",
           "string"
         ]
       ]
@@ -197,6 +201,27 @@
             "number": true,
             "override_special": null,
             "result": "qpq0",
+            "special": false,
+            "upper": false
+          },
+          "sensitive_attributes": [],
+          "private": "eyJzY2hlbWFfdmVyc2lvbiI6IjEifQ=="
+        },
+        {
+          "index_key": 1,
+          "schema_version": 1,
+          "attributes": {
+            "id": "39tc",
+            "keepers": null,
+            "length": 4,
+            "lower": true,
+            "min_lower": 0,
+            "min_numeric": 0,
+            "min_special": 0,
+            "min_upper": 0,
+            "number": true,
+            "override_special": null,
+            "result": "39tc",
             "special": false,
             "upper": false
           },
