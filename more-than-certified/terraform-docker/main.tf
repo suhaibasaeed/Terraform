@@ -20,6 +20,11 @@ variable "ext_port" {
 variable "int_port" {
   type = number
   default = 1880
+  
+  validation {
+    condition = var.int_port == 1880
+    error_message = "The internal port must be 1880."
+  }
 }
 
 variable "container_count" {
@@ -35,7 +40,7 @@ resource "docker_image" "nodered_image" {
 
 # Define random string resources for names of containers
 resource "random_string" "random" {
-  count = 1
+  count = var.container_count
   length = 4
   special = false
   upper = false
