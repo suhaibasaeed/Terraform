@@ -11,6 +11,14 @@ terraform {
 # Instantiate provider
 provider "docker" {}
 
+# Create null resource for local exec provisioner
+resource "null_resource" "dockervol" {
+  provisioner "local-exec" {
+    # Bash command to create directory and mount to docker vol
+    command = "mkdir noderedvol/ || true && sudo chown -R 1000:1000 noderedvol"
+  }
+}
+
 # Define docker image resource called nodered_image
 resource "docker_image" "nodered_image" {
   # Name of image itself from DockerHub
@@ -37,5 +45,12 @@ resource "docker_container" "nodered_container" {
   ports {
     internal = var.int_port
     external = var.ext_port
+  }
+  # To mount folder to container
+  volumes {
+    # Nodered docs says mount it to data voluem in container
+    container_path = "/data"
+    # Absolute host path
+    host_path = "/home/ubuntu/environment/git_repo/Terraform/more-than-certified/terraform-docker/noderedvol"
   }
 }
