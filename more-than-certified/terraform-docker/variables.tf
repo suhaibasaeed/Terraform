@@ -1,7 +1,6 @@
 # Add variables
 variable "ext_port" {
   type = number
-  default = 1880
   # Validation for variable
   validation {
     condition = var.ext_port <= 65535 && var.ext_port > 0
