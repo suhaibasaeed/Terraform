@@ -27,7 +27,8 @@ resource "docker_image" "nodered_image" {
 
 # Define random string resources for names of containers
 resource "random_string" "random" {
-  count = var.container_count
+  # Length of ext_port list
+  count = local.container_count
   length = 4
   special = false
   upper = false
@@ -35,7 +36,8 @@ resource "random_string" "random" {
 
 # Define docker container resource
 resource "docker_container" "nodered_container" {
-  count = var.container_count # 1 container now only
+  # length of ext_port list
+  count = local.container_count
   # Give it logical name if we need to reference it later - Use random string
   name = join("-", ["nodered", random_string.random[count.index].result])
   # Specify docker image and ref image we made above
@@ -44,13 +46,13 @@ resource "docker_container" "nodered_container" {
   # Ports to expose on container + mapping
   ports {
     internal = var.int_port
-    external = var.ext_port
+    external = var.ext_port[count.index]
   }
   # To mount folder to container
   volumes {
     # Nodered docs says mount it to data voluem in container
     container_path = "/data"
-    # Absolute host path
-    host_path = "/home/ubuntu/environment/git_repo/Terraform/more-than-certified/terraform-docker/noderedvol"
+    # Absolute host path using path.cwd named value and string interpolation
+    host_path = "${path.cwd}/noderedvol"
   }
 }

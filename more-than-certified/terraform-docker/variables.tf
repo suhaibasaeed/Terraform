@@ -1,9 +1,11 @@
 # Add variables
 variable "ext_port" {
-  type = number
+  type = list
   # Validation for variable
+  
   validation {
-    condition = var.ext_port <= 65535 && var.ext_port > 0
+    # Add max/min funcs and spread operator as variable is a list
+    condition = max(var.ext_port...) <= 65535 && min(var.ext_port...) > 0
     error_message = "The external port must be 0 - 65535."
   }
 }
@@ -18,7 +20,7 @@ variable "int_port" {
   }
 }
 
-variable "container_count" {
-  type = number
-  default = 1
+locals {
+  # Number of items in ext_port list
+  container_count = length(var.ext_port)
 }
