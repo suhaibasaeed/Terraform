@@ -47,7 +47,8 @@ resource "docker_container" "nodered_container" {
   # Ports to expose on container + mapping
   ports {
     internal = var.int_port
-    external = var.ext_port[count.index]
+    # Change this to get corresponding list of ports for env
+    external = lookup(var.ext_port, var.env)[count.index]
   }
   # To mount folder to container
   volumes {
