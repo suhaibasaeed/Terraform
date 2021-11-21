@@ -1,3 +1,18 @@
+variable "env" {
+  type = string
+  # So we don't accidentally deploy to prod
+  default = "dev"
+  description = "Environment to deploy to"
+}
+
+variable "image" {
+  type = map
+  description = "Image for container"
+  default = {
+    dev = "nodered/node-red:latest"
+    prod = "nodered/node-red:latest-minimal"
+    }
+}
 # Add variables
 variable "ext_port" {
   type = list

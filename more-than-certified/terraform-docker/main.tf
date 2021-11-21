@@ -22,7 +22,8 @@ resource "null_resource" "dockervol" {
 # Define docker image resource called nodered_image
 resource "docker_image" "nodered_image" {
   # Name of image itself from DockerHub
-  name = "nodered/node-red:latest"
+  # Use lookup to pull from map based on what env variable is
+  name = lookup(var.image, var.env)
 }
 
 # Define random string resources for names of containers
