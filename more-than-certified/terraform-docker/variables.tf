@@ -1,9 +1,3 @@
-variable "env" {
-  type = string
-  # So we don't accidentally deploy to prod
-  default = "dev"
-  description = "Environment to deploy to"
-}
 
 variable "image" {
   type = map
@@ -43,5 +37,5 @@ variable "int_port" {
 # Change to a lookup so we can be returned appropriate list
 locals {
   # Number of items in ext_port list
-  container_count = length(lookup(var.ext_port, var.env))
+  container_count = length(lookup(var.ext_port, terraform.workspace))
 }
