@@ -22,8 +22,8 @@ resource "null_resource" "dockervol" {
 # Define docker image resource called nodered_image
 resource "docker_image" "nodered_image" {
   # Name of image itself from DockerHub
-  # Use lookup to pull from map based on what env variable is
-  name = lookup(var.image, terraform.workspace)
+  # Use map key instead of lookup
+  name = var.image[terraform.workspace]
 }
 
 # Define random string resources for names of containers
@@ -47,8 +47,8 @@ resource "docker_container" "nodered_container" {
   # Ports to expose on container + mapping
   ports {
     internal = var.int_port
-    # Change this to get corresponding list of ports for env
-    external = lookup(var.ext_port, terraform.workspace)[count.index]
+    # Use map key ref instead of lookup
+    external = var.ext_port[terraform.workspace][count.index]
   }
   # To mount folder to container
   volumes {
