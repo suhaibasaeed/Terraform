@@ -7,11 +7,9 @@ resource "null_resource" "dockervol" {
   }
 }
 
-# Define docker image resource called nodered_image
-resource "docker_image" "nodered_image" {
-  # Name of image itself from DockerHub
-  # Use map key instead of lookup
-  name = var.image[terraform.workspace]
+# reference docker image resource from image module
+module "image" {
+  source = "./image"
 }
 
 # Define random string resources for names of containers
@@ -30,8 +28,8 @@ resource "docker_container" "nodered_container" {
   # Give it logical name if we need to reference it later - Use random string
   name = join("-", ["nodered", terraform.workspace, random_string.random[count.index].result])
   # Specify docker image and ref image we made above
-  # .latest gives us ID of the image
-  image = docker_image.nodered_image.latest
+  # Reference output from image module
+  image = module.image.image_out
   # Ports to expose on container + mapping
   ports {
     internal = var.int_port
