@@ -9,4 +9,3 @@ terraform {
 }
 
 # Instantiate provider
-provider "docker" {}
