@@ -10,6 +10,8 @@ resource "null_resource" "dockervol" {
 # reference docker image resource from image module
 module "image" {
   source = "./image"
+  # Use key of image map to get image
+  image_in = var.image[terraform.workspace]
 }
 
 # Define random string resources for names of containers
