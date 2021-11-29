@@ -25,10 +25,12 @@ resource "random_string" "random" {
 
 # Define docker container resource
 resource "docker_container" "nodered_container" {
+  # Explicit dependency
+  depends_on = [null_resource.dockervol]
   # length of ext_port list
   count = local.container_count
-  # Give it logical name if we need to reference it later - Use nullresource ID so we make it dependent on it
-  name = join("-", ["nodered", terraform.workspace, null_resource.dockervol.id, random_string.random[count.index].result])
+  # Give it logical name if we need to reference it later
+  name = join("-", ["nodered", terraform.workspace, random_string.random[count.index].result])
   # Specify docker image and ref image we made above
   # Reference output from image module
   image = module.image.image_out
