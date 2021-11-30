@@ -14,7 +14,7 @@ module "image" {
   image_in = var.image[terraform.workspace]
 }
 
-module "docker_container" {
+module "container" {
   source = "./container"
   # Explicit dependency - Works in modules as of TF v0.13
   depends_on = [null_resource.dockervol]

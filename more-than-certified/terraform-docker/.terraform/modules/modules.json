@@ -1,1 +1,1 @@
-{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"image","Source":"./image","Dir":"image"},{"Key":"docker_container","Source":"./container","Dir":"container"}]}
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"image","Source":"./image","Dir":"image"},{"Key":"docker_container","Source":"./container","Dir":"container"},{"Key":"container","Source":"./container","Dir":"container"}]}
