@@ -1,12 +1,4 @@
 
-# Create null resource for local exec provisioner
-resource "null_resource" "dockervol" {
-  provisioner "local-exec" {
-    # Bash command to create directory and mount to docker vol
-    command = "mkdir noderedvol/ || true && sudo chown -R 1000:1000 noderedvol"
-  }
-}
-
 # reference docker image resource from image module
 module "image" {
   source = "./image"
@@ -16,8 +8,6 @@ module "image" {
 
 module "container" {
   source = "./container"
-  # Explicit dependency - Works in modules as of TF v0.13
-  depends_on = [null_resource.dockervol]
   # Count kept in root as we don't want multiple containers within module
   count = local.container_count
   # Pass into module

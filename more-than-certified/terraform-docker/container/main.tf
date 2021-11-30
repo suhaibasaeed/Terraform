@@ -15,7 +15,11 @@ resource "docker_container" "nodered_container" {
   volumes {
     # Nodered docs says mount it to data voluem in container
     container_path = var.container_path_in
-    # Absolute host path using path.cwd named value and string interpolation
-    host_path = var.host_path_in
+    # Reference docker_volume resource's name below
+    volume_name = docker_volume.container_volume.name
   }
+}
+
+resource "docker_volume" "container_volume" {
+    name = "${var.name_in}-volume"
 }
