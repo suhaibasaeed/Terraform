@@ -14,6 +14,24 @@ module "image" {
   image_in = var.image[terraform.workspace]
 }
 
+module "docker_container" {
+  source = "./container"
+  # Explicit dependency - Works in modules as of TF v0.13
+  depends_on = [null_resource.dockervol]
+  # Count kept in root as we don't want multiple containers within module
+  count = local.container_count
+  # Pass into module
+  name_in = join("-", ["nodered", terraform.workspace, random_string.random[count.index].result])
+  # Reference output from image module - We don't want module to module flow
+  image_in = module.image.image_out
+  # Ports - Inside module block as this info defined in root
+  int_port_in = var.int_port
+  ext_port_in = var.ext_port[terraform.workspace][count.index]
+  # Volume
+  container_path_in = "/data"
+  host_path_in = "${path.cwd}/noderedvol"
+  
+}
 # Define random string resources for names of containers
 resource "random_string" "random" {
   # Length of ext_port list
@@ -21,30 +39,4 @@ resource "random_string" "random" {
   length = 4
   special = false
   upper = false
-}
-
-# Define docker container resource
-resource "docker_container" "nodered_container" {
-  # Explicit dependency
-  depends_on = [null_resource.dockervol]
-  # length of ext_port list
-  count = local.container_count
-  # Give it logical name if we need to reference it later
-  name = join("-", ["nodered", terraform.workspace, random_string.random[count.index].result])
-  # Specify docker image and ref image we made above
-  # Reference output from image module
-  image = module.image.image_out
-  # Ports to expose on container + mapping
-  ports {
-    internal = var.int_port
-    # Use map key ref instead of lookup
-    external = var.ext_port[terraform.workspace][count.index]
-  }
-  # To mount folder to container
-  volumes {
-    # Nodered docs says mount it to data voluem in container
-    container_path = "/data"
-    # Absolute host path using path.cwd named value and string interpolation
-    host_path = "${path.cwd}/noderedvol"
-  }
 }
