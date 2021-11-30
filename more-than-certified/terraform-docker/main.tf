@@ -3,7 +3,7 @@
 resource "null_resource" "dockervol" {
   provisioner "local-exec" {
     # Bash command to create directory and mount to docker vol
-    command = "sleep 60 && mkdir noderedvol/ || true && sudo chown -R 1000:1000 noderedvol"
+    command = "mkdir noderedvol/ || true && sudo chown -R 1000:1000 noderedvol"
   }
 }
 
