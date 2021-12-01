@@ -22,4 +22,7 @@ resource "docker_container" "nodered_container" {
 
 resource "docker_volume" "container_volume" {
     name = "${var.name_in}-volume"
+    lifecycle {
+      prevent_destroy = false
+    }
 }
