@@ -19,6 +19,15 @@ resource "docker_container" "app_container" {
     # Reference docker_volume resource's name below
     volume_name = docker_volume.container_volume[count.index].name
   }
+  # Provisioner to create file
+  provisioner "local-exec" {
+    command = "echo ${self.name}: ${self.ip_address}:${join("", [for x in self.ports[*]["external"]: x])} >> containers.txt"
+  }
+  # Provisioner to destroy file
+  provisioner "local-exec" {
+    when = destroy
+    command = "rm -f containers.txt"
+  }
 }
 
 resource "docker_volume" "container_volume" {
@@ -26,6 +35,20 @@ resource "docker_volume" "container_volume" {
     name = "${var.name_in}-${random_string.random[count.index].result}-volume"
     lifecycle {
       prevent_destroy = false
+    }
+    # Create back up folder
+    provisioner "local-exec" {
+      # When we are destroying infrastructure
+      when = destroy
+      command = "mkdir ${path.cwd}/../backup"
+      # We have 3 containers so it will try to create 3 times - failing twice
+      on_failure = continue
+    }
+    # Do actual back up - create tar.gz file of volume (mountpoint)
+    provisioner "local-exec" {
+      when = destroy
+      command = "sudo tar -czvf ${path.cwd}/../backup/${self.name}.tar.gz ${self.mountpoint}/"
+      on_failure = fail
     }
 }
 
