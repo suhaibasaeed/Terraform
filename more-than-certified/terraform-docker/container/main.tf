@@ -13,11 +13,15 @@ resource "docker_container" "app_container" {
     external = var.ext_port_in[count.index]
   }
   # To mount folder to container
-  volumes {
-    # Nodered docs says mount it to data voluem in container
-    container_path = var.container_path_in
+  dynamic "volumes" {
+    for_each = var.volumes_in
+    # Put settings in content block
+    content {
+    # Nodered docs says mount it to data volume in container
+    container_path = volumes.value["container_path_each"]
     # Reference docker_volume resource's name below
-    volume_name = docker_volume.container_volume[count.index].name
+    volume_name = docker_volume.container_volume[volumes.key].name
+    }
   }
   # Provisioner to create file
   provisioner "local-exec" {
@@ -31,8 +35,9 @@ resource "docker_container" "app_container" {
 }
 
 resource "docker_volume" "container_volume" {
-    count = var.count_in
-    name = "${var.name_in}-${random_string.random[count.index].result}-volume"
+    # Number of volumes passed in from locals deployment block
+    count =length(var.volumes_in)
+    name = "${var.name_in}-${count.index}-volume"
     lifecycle {
       prevent_destroy = false
     }

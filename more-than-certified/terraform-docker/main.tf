@@ -22,7 +22,6 @@ module "container" {
   int_port_in = each.value.int
   ext_port_in = each.value.ext
   # Volume
-  container_path_in = each.value.container_path
-  
+  volumes_in = each.value.volumes
 }
 
