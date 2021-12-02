@@ -18,16 +18,16 @@ variable "ext_port" {
   type = map
   # Validation for variable
   # Different rule for prod and dev env. Use key to reference map
-  validation {
-    # Add max/min funcs and spread operator as variable is a list
-    condition = max(var.ext_port["dev"]...) <= 65535 && min(var.ext_port["dev"]...) >= 1980
-    error_message = "The external port must be 0 - 65535."
-  }
-  validation {
-  # Add max/min funcs and spread operator as variable is a list
-  condition = max(var.ext_port["prod"]...) < 1980 && min(var.ext_port["prod"]...) >= 1880
-  error_message = "The external port must be 0 - 65535."
-  }
+  # validation {
+  #   # Add max/min funcs and spread operator as variable is a list
+  #   condition = max(var.ext_port["dev"]...) <= 65535 && min(var.ext_port["dev"]...) >= 1980
+  #   error_message = "The external port must be 0 - 65535."
+  # }
+  # validation {
+  # # Add max/min funcs and spread operator as variable is a list
+  # condition = max(var.ext_port["prod"]...) < 1980 && min(var.ext_port["prod"]...) >= 1880
+  # error_message = "The external port must be 0 - 65535."
+  # }
 }
 
 variable "int_port" {
@@ -41,7 +41,7 @@ variable "int_port" {
 }
 
 # Change to a lookup so we can be returned appropriate list
-locals {
-  # Number of items in ext_port list
-  container_count = length(var.ext_port[terraform.workspace])
-}
+# locals {
+#   # Number of items in ext_port list
+#   container_count = length(var.ext_port[terraform.workspace])
+# }
