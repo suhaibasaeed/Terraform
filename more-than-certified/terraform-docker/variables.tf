@@ -40,8 +40,3 @@ variable "int_port" {
   }
 }
 
-# Change to a lookup so we can be returned appropriate list
-# locals {
-#   # Number of items in ext_port list
-#   container_count = length(var.ext_port[terraform.workspace])
-# }

@@ -1,6 +1,7 @@
 locals {
   deployment = {
     nodered = {
+      container_count = length(var.ext_port["nodered"][terraform.workspace])
       image = var.image["nodered"][terraform.workspace]
       int = 1880
       # Get from tfvars file map
@@ -9,6 +10,7 @@ locals {
       
     }
     influxdb = {
+      container_count = length(var.ext_port["influxdb"][terraform.workspace])
       image = var.image["influxdb"][terraform.workspace]
       int = 8086
       # Get from tfvars file map
@@ -31,23 +33,17 @@ module "container" {
   source = "./container"
   # Add for_each and reference deployment map
   for_each = local.deployment
-  # Pass into module
-  name_in = join("-", [each.key, terraform.workspace, random_string.random[each.key].result])
+  # How many containers to deploy
+  count_in = each.value.container_count
+  # Pass into module - Do join in module main.tf as random resource is there
+  name_in = each.key
   # Reference output from image module - We don't want module to module flow
   image_in = module.image[each.key].image_out
   # Ports - Inside module block as this info defined in root
   int_port_in = each.value.int
-  # Because ext_port is a list and we only have one container being created for each
-  ext_port_in = each.value.ext[0]
+  ext_port_in = each.value.ext
   # Volume
   container_path_in = each.value.container_path
   
 }
-# Define random string resources for names of containers
-resource "random_string" "random" {
-  # Use above map to find out how many we need
-  for_each = local.deployment
-  length = 4
-  special = false
-  upper = false
-}
+
