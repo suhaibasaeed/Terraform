@@ -1,5 +1,5 @@
 # Define docker container resource
-resource "docker_container" "nodered_container" {
+resource "docker_container" "app_container" {
   count = var.count_in
   # Give it logical name if we need to reference it later
   name = join("-", [var.name_in, terraform.workspace, random_string.random[count.index].result])
