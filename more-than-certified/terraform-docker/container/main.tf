@@ -19,8 +19,8 @@ resource "docker_container" "app_container" {
     content {
     # Nodered docs says mount it to data volume in container
     container_path = volumes.value["container_path_each"]
-    # Reference docker_volume resource's name below
-    volume_name = docker_volume.container_volume[volumes.key].name
+    # Reference module for name
+    volume_name = module.volume[count.index].volume_output[volumes.key]
     }
   }
   # Provisioner to create file
@@ -34,29 +34,6 @@ resource "docker_container" "app_container" {
   }
 }
 
-resource "docker_volume" "container_volume" {
-    # Number of volumes passed in from locals deployment block
-    count =length(var.volumes_in)
-    name = "${var.name_in}-${count.index}-volume"
-    lifecycle {
-      prevent_destroy = false
-    }
-    # Create back up folder
-    provisioner "local-exec" {
-      # When we are destroying infrastructure
-      when = destroy
-      command = "mkdir ${path.cwd}/../backup"
-      # We have 3 containers so it will try to create 3 times - failing twice
-      on_failure = continue
-    }
-    # Do actual back up - create tar.gz file of volume (mountpoint)
-    provisioner "local-exec" {
-      when = destroy
-      command = "sudo tar -czvf ${path.cwd}/../backup/${self.name}.tar.gz ${self.mountpoint}/"
-      on_failure = fail
-    }
-}
-
 # Define random string resources for names of containers
 resource "random_string" "random" {
   # Use variable from root
@@ -64,4 +41,14 @@ resource "random_string" "random" {
   length = 4
   special = false
   upper = false
+}
+
+# volume nested module within container module
+module "volume" {
+  source = "./volume"
+  # Run module same amount of times container module run
+  count = var.count_in
+  # How many volumes created each time module run
+  volume_count = length(var.volumes_in)
+  volume_name = "${var.name_in}-${terraform.workspace}-${random_string.random[count.index].result}-volume"
 }
