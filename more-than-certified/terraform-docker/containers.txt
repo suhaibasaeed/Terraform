@@ -1,6 +1,0 @@
-grafana-dev-5pt9: 172.17.0.2:9191
-grafana-dev-knb0: 172.17.0.3:9192
-influxdb-dev-m72z: 172.17.0.4:8186
-nodered-dev-naaw: 172.17.0.7:1980
-influxdb-dev-fhll: 172.17.0.5:8187
-nodered-dev-8mh7: 172.17.0.6:1981
