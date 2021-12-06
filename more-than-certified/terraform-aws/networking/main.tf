@@ -11,7 +11,7 @@ resource "aws_vpc" "mtc_vpc" {
   cidr_block = var.vpc_cidr
   # So that we can have DNS hostnames for resources in VPC
   enable_dns_hostnames = true
-  enable_dns_support_  = true
+  enable_dns_support = true
 
   tags = {
     Name = "mtc_vpc-${random_integer.random.id}"
