@@ -19,8 +19,8 @@ resource "aws_vpc" "mtc_vpc" {
 }
 
 resource "aws_subnet" "mtc_public_subnet" {
-  # Deploy however many items are in list
-  count = length(var.public_cidrs)
+  # Changed to manual count
+  count = var.public_sn_count
   # Reference VPC resource created earlier
   vpc_id = aws_vpc.mtc_vpc.id
   # Use list index
@@ -37,8 +37,8 @@ resource "aws_subnet" "mtc_public_subnet" {
 }
 
 resource "aws_subnet" "mtc_private_subnet" {
-  # Deploy however many items are in list
-  count = length(var.private_cidrs)
+  # Changed to manual count
+  count = var.private_sn_count
   # Reference VPC resource created earlier
   vpc_id = aws_vpc.mtc_vpc.id
   # Use list index
