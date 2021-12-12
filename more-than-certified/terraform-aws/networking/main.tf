@@ -17,3 +17,37 @@ resource "aws_vpc" "mtc_vpc" {
     Name = "mtc_vpc-${random_integer.random.id}"
   }
 }
+
+resource "aws_subnet" "mtc_public_subnet" {
+  # Deploy however many items are in list
+  count = length(var.public_cidrs)
+  # Reference VPC resource created earlier
+  vpc_id = aws_vpc.mtc_vpc.id
+  # Use list index
+  cidr_block = var.public_cidrs[count.index]
+  # Default is false
+  map_public_ip_on_launch = true
+  # list of AZs we're going to use - Index makes sure we're only passing in 1
+  availability_zone = ["us-west-2a","us-west-2b","us-west-2c", "us-west-2d"][count.index]
+  
+  tags = {
+    # Good practice to do + 1
+    Name = "mtc_public-${count.index + 1}"
+  }
+}
+
+resource "aws_subnet" "mtc_private_subnet" {
+  # Deploy however many items are in list
+  count = length(var.private_cidrs)
+  # Reference VPC resource created earlier
+  vpc_id = aws_vpc.mtc_vpc.id
+  # Use list index
+  cidr_block = var.private_cidrs[count.index]
+  # list of AZs we're going to use - Index makes sure we're only passing in 1
+  availability_zone = ["us-west-2a","us-west-2b","us-west-2c", "us-west-2d"][count.index]
+  
+  tags = {
+    # Good practice to do + 1
+    Name = "mtc_private-${count.index + 1}"
+  }
+}
