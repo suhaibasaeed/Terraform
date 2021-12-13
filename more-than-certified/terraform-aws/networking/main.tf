@@ -1,5 +1,6 @@
 # Networking/main.tf
 
+data "aws_availability_zones" "available" {}
 # Will be used for VPC
 resource "random_integer" "random" {
   min = 1
@@ -27,8 +28,8 @@ resource "aws_subnet" "mtc_public_subnet" {
   cidr_block = var.public_cidrs[count.index]
   # Default is false
   map_public_ip_on_launch = true
-  # list of AZs we're going to use - Index makes sure we're only passing in 1
-  availability_zone = ["us-west-2a","us-west-2b","us-west-2c", "us-west-2d"][count.index]
+  # list of AZs we're going to use - Use data source and it's name attribute
+  availability_zone = data.aws_availability_zones.available.names[count.index]
   
   tags = {
     # Good practice to do + 1
@@ -43,8 +44,8 @@ resource "aws_subnet" "mtc_private_subnet" {
   vpc_id = aws_vpc.mtc_vpc.id
   # Use list index
   cidr_block = var.private_cidrs[count.index]
-  # list of AZs we're going to use - Index makes sure we're only passing in 1
-  availability_zone = ["us-west-2a","us-west-2b","us-west-2c", "us-west-2d"][count.index]
+  # list of AZs we're going to use - Use data source and it's name attribute
+  availability_zone = data.aws_availability_zones.available.names[count.index]
   
   tags = {
     # Good practice to do + 1
