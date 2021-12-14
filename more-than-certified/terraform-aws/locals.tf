@@ -17,6 +17,26 @@ locals {
           # list of ranges allowed to access resources
           cidr_blocks = [var.access_ip]
         }
+        http = {
+          from        = 80
+          to          = 80
+          protocol    = "tcp"
+          cidr_blocks = ["0.0.0.0/0"]
+        }
+      }
+    }
+
+    rds = {
+      name        = "rds_sg"
+      description = "SG for private RDS"
+      ingress = {
+        mysql = {
+          from     = 3306
+          to       = 3306
+          protocol = "tcp"
+          # We only want access from within the VPC
+          cidr_blocks = [local.vpc_cidr]
+        }
       }
     }
   }
