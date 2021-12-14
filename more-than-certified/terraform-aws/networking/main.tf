@@ -20,12 +20,12 @@ resource "aws_vpc" "mtc_vpc" {
   cidr_block = var.vpc_cidr
   # So that we can have DNS hostnames for resources in VPC
   enable_dns_hostnames = true
-  enable_dns_support = true
+  enable_dns_support   = true
 
   tags = {
     Name = "mtc_vpc-${random_integer.random.id}"
   }
-  
+
   # Create new VPC before old one is destroyed
   lifecycle {
     create_before_destroy = true
@@ -43,7 +43,7 @@ resource "aws_subnet" "mtc_public_subnet" {
   map_public_ip_on_launch = true
   # list of AZs we're going to use - Use random shuffle
   availability_zone = random_shuffle.az_list.result[count.index]
-  
+
   tags = {
     # Good practice to do + 1
     Name = "mtc_public-${count.index + 1}"
@@ -54,7 +54,7 @@ resource "aws_route_table_association" "mtc_public_association" {
   # Every public subnet needs to be associated with public RT
   count = var.public_sn_count
   # Subnet IDs of all the public subnets
-  subnet_id = aws_subnet.mtc_public_subnet.*.id[count.index]
+  subnet_id      = aws_subnet.mtc_public_subnet.*.id[count.index]
   route_table_id = aws_route_table.mtc_public_rt.id
 }
 
@@ -67,7 +67,7 @@ resource "aws_subnet" "mtc_private_subnet" {
   cidr_block = var.private_cidrs[count.index]
   # list of AZs we're going to use - Use random shuffle
   availability_zone = random_shuffle.az_list.result[count.index]
-  
+
   tags = {
     # Good practice to do + 1
     Name = "mtc_private-${count.index + 1}"
@@ -77,23 +77,23 @@ resource "aws_subnet" "mtc_private_subnet" {
 resource "aws_internet_gateway" "mtc_internet_gateway" {
   # Reference VPC resource created earlier
   vpc_id = aws_vpc.mtc_vpc.id
-  
+
   tags = {
     Name = "mtc_igw"
-    }
+  }
 }
 
 resource "aws_route_table" "mtc_public_rt" {
   vpc_id = aws_vpc.mtc_vpc.id
-  
+
   tags = {
     Name = "mtc_public"
-    }
+  }
 }
 
 resource "aws_route" "default_route" {
   # Specify which RT route is for
-  route_table_id = aws_route_table.mtc_public_rt.id
+  route_table_id         = aws_route_table.mtc_public_rt.id
   destination_cidr_block = "0.0.0.0/0"
   # What is the next hop i.e. gateway of last resort
   gateway_id = aws_internet_gateway.mtc_internet_gateway.id
@@ -103,8 +103,32 @@ resource "aws_route" "default_route" {
 resource "aws_default_route_table" "mtc_private_rt" {
   # Every VPC already gets default RT - We specify it's default for our infra
   default_route_table_id = aws_vpc.mtc_vpc.default_route_table_id
-  
+
   tags = {
     Name = "mtc_private"
-    }
+  }
+}
+
+resource "aws_security_group" "mtc_sg" {
+  name        = "public_sg"
+  description = "SG for public subnet"
+  vpc_id      = aws_vpc.mtc_vpc.id
+  # Inbound rules
+  ingress {
+    from_port = 22
+    to_port   = 22
+    protocol  = "tcp"
+    # list of ranges allowed to access resources
+    cidr_blocks = [var.access_ip]
+  }
+
+  # Outbound rules
+  egress {
+    from_port = 0
+    to_port   = 0
+    # -1 means all protocols
+    protocol = "-1"
+    # list of ranges allowed to access resources
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 }
