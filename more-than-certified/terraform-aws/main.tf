@@ -13,5 +13,7 @@ module "networking" {
   private_sn_count = 3
   public_sn_count  = 2
   max_subnets      = 20
+  # We want a db subnet group
+  db_subnet_group = true
 
 }
