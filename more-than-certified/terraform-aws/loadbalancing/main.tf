@@ -5,6 +5,6 @@ resource "aws_lb" "mtc_lb" {
     # What AZs/subnets to route traffic to
     subnets = var.public_subnets
     # What traffic can reach it
-    security_groups = [var.sublic_sg]
+    security_groups = [var.public_sg]
     idle_timeout = 400
 }

@@ -36,6 +36,6 @@ module "networking" {
 
 module "loadbalancing" {
   source = "./loadbalancing"
-  public_sg = "module.networking.public_sg"
-  public_subnets = "module.networking.public_subnets"
+  public_sg = module.networking.public_sg
+  public_subnets = module.networking.public_subnets
 }
