@@ -11,3 +11,13 @@ variable "vol_size" {}
 variable "key_name" {}
 
 variable "public_key_path" {}
+
+variable "user_data_path" {}
+
+variable "dbuser" {}
+
+variable "dbname" {}
+
+variable "dbpassword" {}
+
+variable "db_endpoint" {}
