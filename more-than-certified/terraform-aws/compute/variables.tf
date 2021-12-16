@@ -23,3 +23,5 @@ variable "dbpassword" {}
 variable "db_endpoint" {}
 
 variable "lb_target_group_arn" {}
+
+variable "tg_port" {}
