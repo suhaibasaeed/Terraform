@@ -59,4 +59,5 @@ module "compute" {
   vol_size       = 10
   key_name = "mtckey"
   public_key_path = "/home/ubuntu/.ssh/keymtc.pub"
+  user_data_path = "${path.root}/userdata.tpl"
 }
