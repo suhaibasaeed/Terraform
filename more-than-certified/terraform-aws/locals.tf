@@ -10,10 +10,12 @@ locals {
       name        = "public_sg"
       description = "SG for public subnet"
       ingress = {
-        ssh = {
-          from     = 22
-          to       = 22
-          protocol = "tcp"
+        open = {
+          # All ports
+          from = 0
+          to   = 0
+          # All protocols
+          protocol = -1
           # list of ranges allowed to access resources
           cidr_blocks = [var.access_ip]
         }
