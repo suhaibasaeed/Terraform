@@ -60,22 +60,29 @@ resource "aws_instance" "mtc_node" {
   provisioner "remote-exec" {
     # connection info so it can get into instance
     connection {
-      type = "ssh"
-      user = "ubuntu"
-      host = self.public_ip
-      private_key = file("/home/ubuntu/.ssh/keymtc")
+      type        = "ssh"
+      user        = "ubuntu"
+      host        = self.public_ip
+      private_key = file(var.private_key_path)
     }
     script = "${path.cwd}/delay.sh"
   }
-  
+
   provisioner "local-exec" {
     command = templatefile("${path.cwd}/scp_script.tpl",
       {
-        nodeip   = self.public_ip
-        k3s_path = "${path.cwd}/../"
-        nodename = self.tags.Name
+        nodeip           = self.public_ip
+        k3s_path         = "${path.cwd}/../"
+        nodename         = self.tags.Name
+        private_key_path = var.private_key_path
       }
     )
+  }
+
+  provisioner "local-exec" {
+    when    = destroy
+    command = "rm -f ${path.cwd}/../k3s-${self.tags.Name}.yaml"
+
   }
 }
 
